@@ -1,0 +1,240 @@
+/* PropValue AI - Precision Estate Narrative Design System */
+
+:root {
+  --color-surface: #faf8ff;
+  --color-surface-dim: #d2d9f4;
+  --color-surface-bright: #faf8ff;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f2f3ff;
+  --color-surface-container: #eaedff;
+  --color-surface-container-high: #e2e7ff;
+  --color-surface-container-highest: #dae2fd;
+  --color-on-surface: #131b2e;
+  --color-on-surface-variant: #444653;
+  --color-inverse-surface: #283044;
+  --color-inverse-on-surface: #eef0ff;
+  --color-outline: #757684;
+  --color-outline-variant: #c4c5d5;
+  --color-primary: #00288e;
+  --color-primary-container: #1e40af;
+  --color-on-primary: #ffffff;
+  --color-on-primary-container: #a8b8ff;
+  --color-secondary: #006a61;
+  --color-secondary-container: #86f2e4;
+  --color-on-secondary-container: #006f66;
+  --color-tertiary: #4c2e00;
+  --color-tertiary-container: #6b4200;
+  --color-tertiary-accent: #f59e0b;
+  --color-error: #ba1a1a;
+  --color-error-container: #ffdad6;
+  --color-canvas: #f8fafc;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--color-canvas);
+  color: var(--color-on-surface);
+  margin: 0;
+  padding: 0;
+}
+
+.font-mono-val {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Material Symbols */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.material-symbols-outlined.icon-fill {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* Cards & Elevation */
+.data-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.04);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.data-card:hover {
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.06);
+}
+
+/* Form Inputs */
+.input-field {
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #131b2e;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+
+.input-field:focus {
+  border-color: #1e40af;
+  box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.15);
+}
+
+/* Primary and Action Buttons */
+.btn-primary {
+  background-color: #1e40af;
+  color: #ffffff;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-primary:hover {
+  background-color: #173bab;
+  box-shadow: 0 4px 12px rgba(30, 64, 175, 0.25);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #444653;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background-color: #f2f3ff;
+  border-color: #1e40af;
+  color: #1e40af;
+}
+
+/* Tab Navigation */
+.nav-item {
+  transition: all 0.2s ease;
+}
+
+.nav-item.active {
+  background-color: #1e40af;
+  color: #ffffff !important;
+}
+
+.nav-item.active .material-symbols-outlined {
+  color: #ffffff !important;
+}
+
+/* Range Sliders */
+input[type=range] {
+  accent-color: #1e40af;
+  height: 6px;
+  border-radius: 3px;
+  background: #eaedff;
+}
+
+/* Smooth Transitions between Views */
+.view-section {
+  display: none;
+  animation: fadeIn 0.3s ease-in-out forwards;
+}
+
+.view-section.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Leaflet Map Customization */
+.leaflet-container {
+  font-family: 'Inter', sans-serif !important;
+  border-radius: 0.75rem;
+  z-index: 1;
+}
+
+.custom-map-pin {
+  background: #1e40af;
+  color: white;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+  border: 2px solid white;
+  white-space: nowrap;
+}
+
+.custom-map-pin.subject {
+  background: #d97706;
+  border-color: white;
+  animation: pulse-ring 2s infinite;
+}
+
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgba(217, 119, 6, 0.6); }
+  70% { box-shadow: 0 0 0 10px rgba(217, 119, 6, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(217, 119, 6, 0); }
+}
+
+/* AI Copilot Highlight Animation */
+@keyframes highlight-field {
+  0% { background-color: #86f2e4; }
+  100% { background-color: #ffffff; }
+}
+
+.field-ai-highlight {
+  animation: highlight-field 1.5s ease-out;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f2f3ff;
+}
+::-webkit-scrollbar-thumb {
+  background: #c4c5d5;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #757684;
+}
+
+/* Printable PDF Appraisal Dossier Styles */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+    font-size: 12pt;
+  }
+
+  aside, header, #toastContainer, .no-print, button {
+    display: none !important;
+  }
+
+  main {
+    overflow: visible !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+  }
+
+  .view-section {
+    display: block !important;
+  }
+
+  .data-card {
+    border: 1px solid #ccc !important;
+    box-shadow: none !important;
+    break-inside: avoid;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+}

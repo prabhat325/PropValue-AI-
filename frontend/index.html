@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html class="light h-full" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PropValue AI - Precision Real Estate Valuation Platform</title>
+    
+    <!-- Tailwind CSS with Forms and Container Queries -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    
+    <!-- Fonts: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Google Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js for Market & Financial Visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Leaflet.js for Interactive Geospatial Mapping -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Tailwind Configuration matching DESIGN.md -->
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#00288e",
+                        "primary-container": "#1e40af",
+                        "on-primary": "#ffffff",
+                        "on-primary-container": "#a8b8ff",
+                        "secondary": "#006a61",
+                        "secondary-container": "#86f2e4",
+                        "on-secondary-container": "#006f66",
+                        "tertiary": "#4c2e00",
+                        "tertiary-container": "#6b4200",
+                        "on-tertiary-container": "#ffa929",
+                        "surface": "#faf8ff",
+                        "surface-bright": "#faf8ff",
+                        "surface-dim": "#d2d9f4",
+                        "surface-variant": "#dae2fd",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#f2f3ff",
+                        "surface-container": "#eaedff",
+                        "surface-container-high": "#e2e7ff",
+                        "surface-container-highest": "#dae2fd",
+                        "on-surface": "#131b2e",
+                        "on-surface-variant": "#444653",
+                        "inverse-surface": "#283044",
+                        "inverse-on-surface": "#eef0ff",
+                        "outline": "#757684",
+                        "outline-variant": "#c4c5d5",
+                        "error": "#ba1a1a",
+                        "error-container": "#ffdad6",
+                        "on-error-container": "#93000a",
+                        "primary-fixed": "#dde1ff",
+                        "primary-fixed-dim": "#b8c4ff"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        "sans": ["Inter", "sans-serif"],
+                        "data-mono": ["JetBrains Mono", "monospace"]
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body class="bg-[#F8FAFC] text-on-surface h-full flex flex-col md:flex-row overflow-hidden antialiased">
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- SideNavBar (Stitch Design Component) -->
+    <aside class="bg-surface-container-low docked left-0 h-screen w-[280px] flex-col p-4 gap-2 border-r border-outline-variant hidden md:flex z-20 shrink-0 select-none">
+        <div class="mb-3 px-2 flex items-center justify-between">
+            <div>
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-[26px]">real_estate_agent</span>
+                    <h1 class="text-xl font-bold text-primary tracking-tight">PropValue AI</h1>
+                </div>
+                <p class="text-xs text-on-surface-variant mt-0.5">Real Estate Valuation &amp; Analysis</p>
+            </div>
+            <span id="backendStatusDot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 ring-4 ring-emerald-100" title="Backend Connected"></span>
+        </div>
+
+        <nav class="flex-1 space-y-1 overflow-y-auto pr-1">
+            <button id="navNewPrediction" class="nav-item active w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-semibold text-left transition-all" onclick="app.showView('valuationForm')">
+                <span class="material-symbols-outlined text-[18px]">add_home</span>
+                <span>New Prediction</span>
+            </button>
+            <button id="navResults" class="nav-item w-full flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg text-xs font-semibold text-left transition-all" onclick="app.showView('valuationResults')">
+                <span class="material-symbols-outlined text-[18px]">analytics</span>
+                <span>Valuation &amp; Comps</span>
+            </button>
+            <button id="navWhatIf" class="nav-item w-full flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg text-xs font-semibold text-left transition-all" onclick="app.showView('whatIfSimulator')">
+                <span class="material-symbols-outlined text-[18px]">tune</span>
+                <span>What-If Simulator</span>
+            </button>
+            <button id="navMortgage" class="nav-item w-full flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg text-xs font-semibold text-left transition-all" onclick="app.showView('mortgageRoi')">
+                <span class="material-symbols-outlined text-[18px]">payments</span>
+                <span>Mortgage &amp; ROI</span>
+            </button>
+            <button id="navComparison" class="nav-item w-full flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg text-xs font-semibold text-left transition-all" onclick="app.showView('propertyComparison')">
+                <span class="material-symbols-outlined text-[18px]">compare_arrows</span>
+                <span class="flex-1">Property Compare</span>
+                <span id="compareCountBadge" class="bg-primary text-white text-[10px] px-1.5 py-0.5 rounded-full font-mono">0</span>
+            </button>
+            <button id="navBatchValuation" class="nav-item w-full flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg text-xs font-semibold text-left transition-all" onclick="app.showView('batchValuation')">
+                <span class="material-symbols-outlined text-[18px]">upload_file</span>
+                <span>Bulk CSV Valuation</span>
+            </button>
+            <button id="navMarketInsights" class="nav-item w-full flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg text-xs font-semibold text-left transition-all" onclick="app.showView('marketInsights')">
+                <span class="material-symbols-outlined text-[18px]">query_stats</span>
+                <span>Market Insights</span>
+            </button>
+            <button id="navSavedEstimates" class="nav-item w-full flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg text-xs font-semibold text-left transition-all" onclick="app.openSavedEstimatesModal()">
+                <span class="material-symbols-outlined text-[18px]">bookmarks</span>
+                <span class="flex-1">Saved Estimates</span>
+                <span id="savedCountBadge" class="bg-surface-container-highest text-primary text-[10px] px-2 py-0.5 rounded-full font-mono">0</span>
+            </button>
+            <button id="navLanding" class="nav-item w-full flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg text-xs font-semibold text-left transition-all" onclick="app.showView('landingOverview')">
+                <span class="material-symbols-outlined text-[18px]">overview</span>
+                <span>Overview &amp; Specs</span>
+            </button>
+        </nav>
+
+        <div class="mt-auto pt-3 border-t border-outline-variant space-y-2">
+            <button onclick="app.openAppraisalDossierModal()" class="w-full btn-primary h-9 text-xs font-bold rounded-lg flex justify-center items-center gap-2 shadow-sm">
+                <span class="material-symbols-outlined text-[16px]">verified</span> Appraisal Dossier
+            </button>
+            <div class="flex flex-col gap-1 text-xs">
+                <a href="javascript:void(0)" onclick="app.showModelInfoModal()" class="flex items-center gap-2 px-2 py-1 text-on-surface-variant hover:bg-surface-container-high rounded transition-all">
+                    <span class="material-symbols-outlined text-[14px]">memory</span> ML Model Specs
+                </a>
+            </div>
+            
+            <!-- Dynamic User Profile Chip -->
+            <div id="sidebarUserContainer" class="p-2 bg-surface-container rounded-xl border border-outline-variant flex flex-col gap-2">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <div id="userAvatarBadge" class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-xs shadow-sm">
+                            G
+                        </div>
+                        <div class="overflow-hidden">
+                            <div id="userNameDisplay" class="text-xs font-bold text-on-surface truncate">Guest User</div>
+                            <div id="userRoleDisplay" class="text-[10px] text-on-surface-variant truncate font-medium">Standard Access</div>
+                        </div>
+                    </div>
+                </div>
+                <div id="authActionsContainer" class="flex gap-1.5 pt-1 border-t border-outline-variant/40">
+                    <button onclick="app.openAuthModal('login')" id="btnOpenAuth" class="w-full btn-secondary h-7 rounded text-[11px] font-bold flex items-center justify-center gap-1">
+                        <span class="material-symbols-outlined text-[14px]">login</span> Sign In / Register
+                    </button>
+                    <button onclick="app.logout()" id="btnLogout" class="w-full btn-secondary h-7 rounded text-[11px] font-bold text-error hover:bg-error/10 hidden items-center justify-center gap-1">
+                        <span class="material-symbols-outlined text-[14px]">logout</span> Sign Out
+                    </button>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col h-full overflow-hidden relative">
+        
+        <!-- Mobile Top Navbar -->
+        <header class="bg-white border-b border-outline-variant md:hidden z-30 flex justify-between items-center px-4 h-14 shrink-0 shadow-sm">
+            <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-[24px]">real_estate_agent</span>
+                <span class="text-base font-bold text-primary">PropValue AI</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="app.openAuthModal('login')" id="btnMobileAuth" class="px-2.5 py-1 bg-surface-container rounded-lg text-xs font-bold text-primary flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[16px]">account_circle</span>
+                    <span id="mobileUserName">Sign In</span>
+                </button>
+                <button onclick="app.toggleMobileMenu()" class="p-2 text-on-surface-variant hover:bg-surface-container rounded-lg">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Mobile Drawer -->
+        <div id="mobileMenuDrawer" class="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm hidden md:hidden">
+            <div class="w-[280px] bg-white h-full p-4 flex flex-col shadow-xl">
+                <div class="flex justify-between items-center mb-4">
+                    <div class="font-bold text-primary text-base">Navigation</div>
+                    <button onclick="app.toggleMobileMenu()" class="p-1 text-on-surface-variant">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+                <nav class="space-y-1 text-xs">
+                    <button onclick="app.showView('valuationForm'); app.toggleMobileMenu()" class="w-full text-left p-2.5 rounded-lg font-medium flex items-center gap-3 hover:bg-surface-container">
+                        <span class="material-symbols-outlined">add_home</span> New Prediction
+                    </button>
+                    <button onclick="app.showView('valuationResults'); app.toggleMobileMenu()" class="w-full text-left p-2.5 rounded-lg font-medium flex items-center gap-3 hover:bg-surface-container">
+                        <span class="material-symbols-outlined">analytics</span> Valuation &amp; Comps
+                    </button>
+                    <button onclick="app.showView('whatIfSimulator'); app.toggleMobileMenu()" class="w-full text-left p-2.5 rounded-lg font-medium flex items-center gap-3 hover:bg-surface-container">
+                        <span class="material-symbols-outlined">tune</span> What-If Simulator
+                    </button>
+                    <button onclick="app.showView('mortgageRoi'); app.toggleMobileMenu()" class="w-full text-left p-2.5 rounded-lg font-medium flex items-center gap-3 hover:bg-surface-container">
+                        <span class="material-symbols-outlined">payments</span> Mortgage &amp; ROI
+                    </button>
+                    <button onclick="app.showView('propertyComparison'); app.toggleMobileMenu()" class="w-full text-left p-2.5 rounded-lg font-medium flex items-center gap-3 hover:bg-surface-container">
+                        <span class="material-symbols-outlined">compare_arrows</span> Property Compare
+                    </button>
+                    <button onclick="app.showView('batchValuation'); app.toggleMobileMenu()" class="w-full text-left p-2.5 rounded-lg font-medium flex items-center gap-3 hover:bg-surface-container">
+                        <span class="material-symbols-outlined">upload_file</span> Bulk CSV Valuation
+                    </button>
+                    <button onclick="app.showView('marketInsights'); app.toggleMobileMenu()" class="w-full text-left p-2.5 rounded-lg font-medium flex items-center gap-3 hover:bg-surface-container">
+                        <span class="material-symbols-outlined">query_stats</span> Market Insights
+                    </button>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Scrollable Workspace -->
+        <div class="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
+            <div class="max-w-[1400px] mx-auto h-full">
+
+                <!-- ================= VIEW 1: VALUATION FORM + LISTING PARSER ================= -->
+                <section id="viewValuationForm" class="view-section active">
+                    
+                    <div class="mb-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
+                        <div>
+                            <h2 class="text-2xl md:text-3xl font-bold text-on-surface tracking-tight">Estimate Property Value</h2>
+                            <p class="text-xs md:text-sm text-on-surface-variant mt-0.5">Enter the property's details below. PropValue AI will estimate its expected market value using the trained ML model.</p>
+                        </div>
+                        <div class="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
+                            <span class="text-on-surface-variant font-semibold whitespace-nowrap">Profiles:</span>
+                            <button type="button" onclick="app.loadPreset('90210')" class="px-2.5 py-1 bg-surface-container hover:bg-primary hover:text-white rounded-full transition-colors whitespace-nowrap">Beverly Hills</button>
+                            <button type="button" onclick="app.loadPreset('94102')" class="px-2.5 py-1 bg-surface-container hover:bg-primary hover:text-white rounded-full transition-colors whitespace-nowrap">San Francisco</button>
+                            <button type="button" onclick="app.loadPreset('78701')" class="px-2.5 py-1 bg-surface-container hover:bg-primary hover:text-white rounded-full transition-colors whitespace-nowrap">Austin</button>
+                            <button type="button" onclick="app.loadPreset('10001')" class="px-2.5 py-1 bg-surface-container hover:bg-primary hover:text-white rounded-full transition-colors whitespace-nowrap">New York</button>
+                        </div>
+                    </div>
+
+                    <!-- LISTING DESCRIPTION PARSER -->
+                    <div class="bg-white rounded-xl border border-secondary/30 p-4 mb-5 shadow-sm bg-gradient-to-r from-secondary-container/20 via-white to-primary-container/10">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-secondary text-[20px]">description</span>
+                                <h3 class="text-xs font-bold text-on-surface uppercase tracking-wider">Listing Description Parser (Auto-Fill)</h3>
+                            </div>
+                            <span class="text-[11px] font-semibold text-secondary">Paste listing notes to auto-populate fields</span>
+                        </div>
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            <input id="aiListingInput" type="text" class="input-field flex-1 rounded-lg px-3 py-2 text-xs" placeholder="e.g. 4 bed 3.5 bath home in 90210 with 3,400 sqft built in 2012, 3-car garage, minor cosmetic renovations...">
+                            <button type="button" onclick="app.parseListingCopilot()" id="btnAiParse" class="bg-secondary text-white hover:bg-teal-800 px-4 py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition-all whitespace-nowrap">
+                                <span class="material-symbols-outlined text-[16px]">bolt</span> Parse Listing Details
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-[540px]">
+                        
+                        <!-- Left Column: Input Form (Bento Card) -->
+                        <div class="lg:col-span-7 flex flex-col">
+                            <div class="data-card rounded-xl p-5 md:p-6 flex-1 flex flex-col">
+                                <div class="flex items-center justify-between pb-3 mb-4 border-b border-outline-variant">
+                                    <div class="flex items-center gap-2">
+                                        <span class="material-symbols-outlined text-primary text-[20px]">edit_document</span>
+                                        <h3 class="text-sm font-bold text-on-surface">Property Details</h3>
+                                    </div>
+                                </div>
+
+                                <form id="predictionForm" onsubmit="app.handlePredictionSubmit(event)" class="space-y-4 flex-1 flex flex-col justify-between">
+                                    
+                                    <!-- Row 1: ZIP Code & Area -->
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div class="flex flex-col gap-1">
+                                            <label for="inputZipCode" class="text-xs font-semibold text-on-surface flex items-center justify-between">
+                                                <span>ZIP Code *</span>
+                                                <span id="zipLocationBadge" class="text-[11px] text-primary font-normal">Beverly Hills, CA</span>
+                                            </label>
+                                            <input id="inputZipCode" name="zip_code" class="input-field w-full rounded-lg px-3 py-2 font-data-mono text-xs" placeholder="e.g. 90210" required type="text" value="90210" oninput="app.onZipChange(this.value)">
+                                        </div>
+                                        <div class="flex flex-col gap-1">
+                                            <label for="inputSqft" class="text-xs font-semibold text-on-surface">Square Footage *</label>
+                                            <input id="inputSqft" name="square_footage" class="input-field w-full rounded-lg px-3 py-2 font-data-mono text-xs" placeholder="e.g. 2500" required type="number" min="300" max="30000" value="2650">
+                                        </div>
+                                    </div>
+
+                                    <!-- Row 2: Bedrooms, Bathrooms, Year Built -->
+                                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                        <div class="flex flex-col gap-1">
+                                            <label for="inputBedrooms" class="text-xs font-semibold text-on-surface">Bedrooms</label>
+                                            <input id="inputBedrooms" name="bedrooms" class="input-field w-full rounded-lg px-3 py-2 font-data-mono text-xs" placeholder="3" type="number" min="1" max="15" value="4">
+                                        </div>
+                                        <div class="flex flex-col gap-1">
+                                            <label for="inputBathrooms" class="text-xs font-semibold text-on-surface">Bathrooms</label>
+                                            <input id="inputBathrooms" name="bathrooms" class="input-field w-full rounded-lg px-3 py-2 font-data-mono text-xs" placeholder="2.5" step="0.5" type="number" min="1" max="15" value="3.5">
+                                        </div>
+                                        <div class="flex flex-col gap-1">
+                                            <label for="inputYearBuilt" class="text-xs font-semibold text-on-surface">Year Built</label>
+                                            <input id="inputYearBuilt" name="year_built" class="input-field w-full rounded-lg px-3 py-2 font-data-mono text-xs" placeholder="1995" type="number" min="1900" max="2026" value="2008">
+                                        </div>
+                                    </div>
+
+                                    <!-- Row 3: Lot Size & Property Type -->
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div class="flex flex-col gap-1">
+                                            <label for="inputLotSize" class="text-xs font-semibold text-on-surface">Lot Size (Acres)</label>
+                                            <input id="inputLotSize" name="lot_size_acres" class="input-field w-full rounded-lg px-3 py-2 font-data-mono text-xs" placeholder="0.25" step="0.01" type="number" min="0.01" max="50" value="0.32">
+                                        </div>
+                                        <div class="flex flex-col gap-1">
+                                            <label for="inputPropertyType" class="text-xs font-semibold text-on-surface">Property Type</label>
+                                            <select id="inputPropertyType" name="property_type" class="input-field w-full rounded-lg px-3 py-2 text-xs bg-white cursor-pointer">
+                                                <option value="Single Family" selected>Single Family</option>
+                                                <option value="Condo">Condo</option>
+                                                <option value="Townhouse">Townhouse</option>
+                                                <option value="Multi-Family">Multi-Family</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Row 4: Renovations & Garage -->
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div class="flex flex-col gap-1">
+                                            <label for="inputRenovations" class="text-xs font-semibold text-on-surface">Renovations</label>
+                                            <select id="inputRenovations" name="renovation_status" class="input-field w-full rounded-lg px-3 py-2 text-xs bg-white cursor-pointer">
+                                                <option value="None">None</option>
+                                                <option value="Minor (Cosmetic)" selected>Minor (Cosmetic)</option>
+                                                <option value="Major (Structural/Systems)">Major (Structural/Systems)</option>
+                                                <option value="Full Gut Rehab">Full Gut Rehab</option>
+                                            </select>
+                                        </div>
+                                        <div class="flex flex-col gap-1">
+                                            <label for="inputGarage" class="text-xs font-semibold text-on-surface">Garage Spaces</label>
+                                            <input id="inputGarage" name="garage_spaces" class="input-field w-full rounded-lg px-3 py-2 font-data-mono text-xs" placeholder="2" type="number" min="0" max="8" value="2">
+                                        </div>
+                                    </div>
+
+                                    <div class="pt-3 flex items-center justify-between text-xs text-on-surface-variant">
+                                        <span class="flex items-center gap-1">
+                                            <span class="material-symbols-outlined text-[14px] text-secondary">security</span>
+                                            Pipeline validation active
+                                        </span>
+                                        <button type="button" onclick="app.resetForm()" class="hover:text-primary underline">Reset Defaults</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Ready Card -->
+                        <div class="lg:col-span-5 flex flex-col">
+                            <div class="data-card rounded-xl p-6 md:p-8 flex-1 flex flex-col justify-center items-center text-center relative overflow-hidden bg-surface-bright border border-outline-variant">
+                                <div class="absolute inset-0 opacity-15 pointer-events-none" style="background-image: radial-gradient(circle at 50% 10%, #00288e 0%, transparent 65%);"></div>
+
+                                <div id="calcReadyState" class="relative z-10 w-full max-w-sm flex flex-col items-center">
+                                    <div class="w-14 h-14 bg-primary-container rounded-full flex items-center justify-center mb-3 text-on-primary-container shadow-md">
+                                        <span class="material-symbols-outlined text-[28px]">analytics</span>
+                                    </div>
+                                    <h3 class="text-lg font-bold text-on-surface mb-1.5">Ready to Estimate</h3>
+                                    <p class="text-xs text-on-surface-variant mb-5 leading-relaxed">
+                                        Estimates expected market value based on living area, location, age, and property features using the trained model.
+                                    </p>
+                                    <button type="button" onclick="document.getElementById('predictionForm').requestSubmit()" class="w-full btn-primary h-11 rounded-lg text-sm font-bold flex justify-center items-center gap-2 shadow-lg">
+                                        <span class="material-symbols-outlined text-[18px]">calculate</span>
+                                        Calculate Value
+                                    </button>
+                                    <div class="mt-4 flex items-center gap-1.5 opacity-75">
+                                        <span class="material-symbols-outlined text-[14px] text-secondary">verified</span>
+                                        <span class="font-data-mono text-on-surface-variant text-[11px]">Model v3.5 • R² = 0.98</span>
+                                    </div>
+                                </div>
+
+                                <div id="calcLoadingState" class="relative z-10 w-full max-w-sm flex-col items-center justify-center hidden">
+                                    <div class="relative w-16 h-16 mb-4 flex items-center justify-center">
+                                        <div class="absolute inset-0 rounded-full border-4 border-primary/20 animate-ping"></div>
+                                        <div class="absolute inset-0 rounded-full border-4 border-t-primary border-r-transparent border-b-primary border-l-transparent animate-spin"></div>
+                                        <span class="material-symbols-outlined text-primary text-[28px]">hub</span>
+                                    </div>
+                                    <h3 class="text-base font-bold text-on-surface mb-1">Evaluating Property Features</h3>
+                                    <p class="text-xs text-on-surface-variant mb-3">Running feature transformation &amp; inference...</p>
+                                    <div class="w-40 h-1.5 bg-surface-container rounded-full overflow-hidden">
+                                        <div class="h-full bg-primary rounded-full animate-pulse w-3/4"></div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
+
+                <!-- ================= VIEW 2: VALUATION RESULTS & INTERACTIVE MAP ================= -->
+                <section id="viewValuationResults" class="view-section">
+                    
+                    <div class="mb-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div class="flex items-center gap-3">
+                            <button onclick="app.showView('valuationForm')" class="p-2 hover:bg-surface-container rounded-lg text-on-surface-variant transition-colors" title="Back to Form">
+                                <span class="material-symbols-outlined">arrow_back</span>
+                            </button>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <h2 class="text-2xl md:text-3xl font-bold text-on-surface tracking-tight">Valuation Analysis</h2>
+                                    <span id="resultZipPill" class="px-2.5 py-0.5 bg-primary-container text-white text-xs font-semibold rounded-full font-data-mono">90210</span>
+                                </div>
+                                <p id="resultLocationText" class="text-xs md:text-sm text-on-surface-variant mt-0.5">Beverly Hills, CA • ML Model Estimate</p>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-wrap items-center gap-2">
+                            <button onclick="app.addToCompareCurrent()" class="btn-secondary px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 shadow-sm">
+                                <span class="material-symbols-outlined text-[16px]">compare_arrows</span> Compare
+                            </button>
+                            <button onclick="app.saveCurrentEstimate()" id="btnSaveEstimate" class="btn-secondary px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 shadow-sm">
+                                <span class="material-symbols-outlined text-[16px]">bookmark_add</span> Save
+                            </button>
+                            <button onclick="app.openAppraisalDossierModal()" class="btn-primary px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 shadow-sm">
+                                <span class="material-symbols-outlined text-[16px]">verified</span> Dossier PDF
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col lg:flex-row gap-6 items-start">
+                        
+                        <!-- Left Column: Results (2/3 width) -->
+                        <div class="w-full lg:w-2/3 flex flex-col gap-6">
+                            
+                            <!-- Primary Estimate Card -->
+                            <div class="bg-white rounded-xl border border-outline-variant p-6 md:p-7 shadow-sm">
+                                <div class="flex flex-col sm:flex-row justify-between items-start gap-4 mb-4">
+                                    <div>
+                                        <h3 class="text-xs uppercase font-bold tracking-wider text-on-surface-variant mb-1">Estimated Property Value</h3>
+                                        <div id="resPredictedPrice" class="text-4xl md:text-5xl font-bold text-primary mb-2 font-data-mono">$1,245,000</div>
+                                        <div class="flex flex-wrap items-center gap-2">
+                                            <span id="resPriceRange" class="px-2.5 py-1 bg-surface-container rounded-md font-data-mono text-xs text-on-surface-variant font-medium">Range: $1.15M - $1.32M</span>
+                                            <span id="resYoyBadge" class="flex items-center gap-1 text-secondary font-semibold text-xs">
+                                                <span class="material-symbols-outlined text-[14px]">trending_up</span>
+                                                <span id="resYoyText">+4.2% (YOY)</span>
+                                            </span>
+                                            <span id="resSqftRate" class="text-xs text-on-surface-variant font-data-mono">• $470 / sq ft</span>
+                                        </div>
+                                    </div>
+                                    <div class="sm:text-right w-full sm:w-auto">
+                                        <div class="text-xs uppercase font-bold tracking-wider text-on-surface-variant mb-1">Confidence Score</div>
+                                        <div class="flex items-center gap-1.5 sm:justify-end">
+                                            <div id="resConfidenceVal" class="text-2xl font-bold text-secondary font-data-mono">94%</div>
+                                            <span class="material-symbols-outlined text-secondary icon-fill text-[20px]">verified</span>
+                                        </div>
+                                        <div class="w-full sm:w-32 h-2 bg-surface-variant rounded-full mt-1.5 sm:ml-auto overflow-hidden">
+                                            <div id="resConfidenceBar" class="h-full bg-secondary rounded-full transition-all duration-700" style="width: 94%;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- FEATURE 3: INTERACTIVE LEAFLET MAP & NEIGHBORHOOD AMENITY SCORES -->
+                            <div class="bg-white rounded-xl border border-outline-variant p-5 shadow-sm">
+                                <div class="flex justify-between items-center mb-3 border-b border-outline-variant pb-2">
+                                    <div class="flex items-center gap-2">
+                                        <span class="material-symbols-outlined text-primary text-[18px]">explore</span>
+                                        <h3 class="text-sm font-bold text-on-surface">Geospatial Map &amp; Neighborhood Intelligence</h3>
+                                    </div>
+                                    <span id="mapNeighborhoodName" class="text-xs font-semibold text-primary bg-primary-container/10 px-2.5 py-0.5 rounded-full">Beverly Hills Golden Triangle</span>
+                                </div>
+
+                                <!-- Amenity Scorecard Row -->
+                                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
+                                    <div class="p-2.5 bg-surface-container rounded-lg text-center">
+                                        <div class="text-[10px] text-on-surface-variant uppercase font-bold">Walk Score</div>
+                                        <div id="scoreWalk" class="text-lg font-bold text-secondary font-data-mono">88 / 100</div>
+                                    </div>
+                                    <div class="p-2.5 bg-surface-container rounded-lg text-center">
+                                        <div class="text-[10px] text-on-surface-variant uppercase font-bold">Transit Score</div>
+                                        <div id="scoreTransit" class="text-lg font-bold text-primary font-data-mono">74 / 100</div>
+                                    </div>
+                                    <div class="p-2.5 bg-surface-container rounded-lg text-center">
+                                        <div class="text-[10px] text-on-surface-variant uppercase font-bold">Schools</div>
+                                        <div id="scoreSchools" class="text-lg font-bold text-amber-600 font-data-mono">9.4 / 10</div>
+                                    </div>
+                                    <div class="p-2.5 bg-surface-container rounded-lg text-center">
+                                        <div class="text-[10px] text-on-surface-variant uppercase font-bold">Price Density</div>
+                                        <div id="scoreDensity" class="text-lg font-bold text-on-surface font-data-mono">$890/sqft</div>
+                                    </div>
+                                </div>
+
+                                <!-- Leaflet Map Container -->
+                                <div id="leafletMap" class="h-80 w-full rounded-xl overflow-hidden border border-outline-variant shadow-inner"></div>
+
+                                <!-- Comps Cards List -->
+                                <div id="comparablesList" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mt-3"></div>
+                            </div>
+
+                            <!-- Market Value Trends Chart -->
+                            <div class="bg-white rounded-xl border border-outline-variant p-5 shadow-sm">
+                                <div class="flex justify-between items-center mb-3 border-b border-outline-variant pb-2">
+                                    <div>
+                                        <h3 class="text-sm font-bold text-on-surface">Market Value Trends (5 Years)</h3>
+                                        <p class="text-[11px] text-on-surface-variant">Historical trajectory &amp; algorithm forecasts</p>
+                                    </div>
+                                    <button onclick="app.downloadChart()" class="p-1 text-on-surface-variant hover:text-primary transition-colors rounded" title="Export Chart">
+                                        <span class="material-symbols-outlined text-[18px]">download</span>
+                                    </button>
+                                </div>
+                                <div class="h-64 w-full relative">
+                                    <canvas id="trendChart"></canvas>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Right Column: Input Summary & Quick Actions -->
+                        <div class="w-full lg:w-1/3">
+                            <div class="bg-white rounded-xl border border-outline-variant p-5 shadow-sm sticky top-6">
+                                <div class="flex justify-between items-center border-b border-outline-variant pb-2 mb-3">
+                                    <h3 class="text-sm font-bold text-on-surface">Input Summary</h3>
+                                    <button onclick="app.showView('valuationForm')" class="text-xs text-primary font-bold hover:underline flex items-center gap-0.5">
+                                        <span class="material-symbols-outlined text-[12px]">edit</span> Edit
+                                    </button>
+                                </div>
+
+                                <div id="inputSummaryList" class="flex flex-col divide-y divide-outline-variant/40 text-xs"></div>
+
+                                <div class="mt-4 pt-3 border-t border-outline-variant space-y-2">
+                                    <button onclick="app.showView('whatIfSimulator')" class="w-full btn-primary h-9 rounded-lg text-xs font-bold shadow-sm flex items-center justify-center gap-1.5">
+                                        <span class="material-symbols-outlined text-[16px]">tune</span> Launch What-If Simulator
+                                    </button>
+                                    <button onclick="app.showView('mortgageRoi')" class="w-full btn-secondary h-9 rounded-lg text-xs font-bold shadow-sm flex items-center justify-center gap-1.5">
+                                        <span class="material-symbols-outlined text-[16px]">payments</span> View Mortgage &amp; ROI
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
+
+                <!-- ================= VIEW 3: FEATURE 1 - WHAT-IF SENSITIVITY SIMULATOR ================= -->
+                <section id="viewWhatIfSimulator" class="view-section">
+                    
+                    <div class="mb-5 flex flex-col md:flex-row md:items-center justify-between gap-3">
+                        <div>
+                            <h2 class="text-2xl md:text-3xl font-bold text-on-surface tracking-tight">Interactive What-If Sensitivity Simulator</h2>
+                            <p class="text-xs md:text-sm text-on-surface-variant mt-0.5">Adjust property parameters in real time to simulate the exact financial price impact.</p>
+                        </div>
+                        <button onclick="app.resetWhatIfToCurrent()" class="btn-secondary px-3 py-1.5 rounded-lg text-xs font-bold">
+                            Reset to Baseline
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        
+                        <!-- Left Sliders Control Panel (7 cols) -->
+                        <div class="lg:col-span-7 space-y-4">
+                            <div class="data-card rounded-xl p-5 md:p-6 space-y-5">
+                                <h3 class="text-sm font-bold text-on-surface border-b border-outline-variant pb-2">Modify Characteristics</h3>
+
+                                <!-- Slider 1: Square Footage -->
+                                <div>
+                                    <div class="flex justify-between items-center text-xs mb-1.5">
+                                        <span class="font-semibold text-on-surface">Living Area (Square Feet)</span>
+                                        <span id="lblWhatIfSqft" class="font-data-mono font-bold text-primary">2,650 sq ft</span>
+                                    </div>
+                                    <input id="sliderWhatIfSqft" type="range" min="800" max="6000" step="50" value="2650" class="w-full" oninput="app.onWhatIfSliderChange()">
+                                    <div class="flex justify-between text-[10px] text-on-surface-variant mt-0.5 font-mono">
+                                        <span>800 sqft</span>
+                                        <span>3,400 sqft</span>
+                                        <span>6,000 sqft</span>
+                                    </div>
+                                </div>
+
+                                <!-- Slider 2: Bedrooms & Bathrooms -->
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <div class="flex justify-between items-center text-xs mb-1.5">
+                                            <span class="font-semibold text-on-surface">Bedrooms</span>
+                                            <span id="lblWhatIfBeds" class="font-data-mono font-bold text-primary">4 Beds</span>
+                                        </div>
+                                        <input id="sliderWhatIfBeds" type="range" min="1" max="8" step="1" value="4" class="w-full" oninput="app.onWhatIfSliderChange()">
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between items-center text-xs mb-1.5">
+                                            <span class="font-semibold text-on-surface">Bathrooms</span>
+                                            <span id="lblWhatIfBaths" class="font-data-mono font-bold text-primary">3.5 Baths</span>
+                                        </div>
+                                        <input id="sliderWhatIfBaths" type="range" min="1" max="7" step="0.5" value="3.5" class="w-full" oninput="app.onWhatIfSliderChange()">
+                                    </div>
+                                </div>
+
+                                <!-- Slider 3: Renovation Status -->
+                                <div>
+                                    <div class="flex justify-between items-center text-xs mb-1.5">
+                                        <span class="font-semibold text-on-surface">Renovation Level</span>
+                                        <span id="lblWhatIfRenov" class="font-data-mono font-bold text-secondary">Minor (Cosmetic)</span>
+                                    </div>
+                                    <div class="grid grid-cols-4 gap-2">
+                                        <button type="button" onclick="app.setWhatIfRenov('None')" class="btn-whatif-renov p-2 rounded-lg border text-xs font-medium" data-val="None">None</button>
+                                        <button type="button" onclick="app.setWhatIfRenov('Minor (Cosmetic)')" class="btn-whatif-renov p-2 rounded-lg border text-xs font-medium bg-primary text-white" data-val="Minor (Cosmetic)">Minor</button>
+                                        <button type="button" onclick="app.setWhatIfRenov('Major (Structural/Systems)')" class="btn-whatif-renov p-2 rounded-lg border text-xs font-medium" data-val="Major (Structural/Systems)">Major</button>
+                                        <button type="button" onclick="app.setWhatIfRenov('Full Gut Rehab')" class="btn-whatif-renov p-2 rounded-lg border text-xs font-medium" data-val="Full Gut Rehab">Gut Rehab</button>
+                                    </div>
+                                </div>
+
+                                <!-- Slider 4: Garage Spaces -->
+                                <div>
+                                    <div class="flex justify-between items-center text-xs mb-1.5">
+                                        <span class="font-semibold text-on-surface">Garage / Parking</span>
+                                        <span id="lblWhatIfGarage" class="font-data-mono font-bold text-primary">2 Spaces</span>
+                                    </div>
+                                    <input id="sliderWhatIfGarage" type="range" min="0" max="5" step="1" value="2" class="w-full" oninput="app.onWhatIfSliderChange()">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Live Delta & Waterfall (5 cols) -->
+                        <div class="lg:col-span-5 space-y-4">
+                            <div class="bg-white rounded-xl border border-outline-variant p-6 shadow-sm">
+                                <div class="text-xs uppercase font-bold text-on-surface-variant mb-1">Simulated Property Value</div>
+                                <div id="whatIfSimulatedPrice" class="text-3xl md:text-4xl font-bold text-primary font-data-mono mb-2">$1,295,000</div>
+                                
+                                <div class="flex items-center gap-2 mb-4">
+                                    <span id="whatIfDeltaPill" class="px-2.5 py-1 rounded-md font-data-mono text-xs font-bold bg-emerald-100 text-emerald-800">+$50,000 (+4.0%)</span>
+                                    <span class="text-xs text-on-surface-variant">vs Baseline</span>
+                                </div>
+
+                                <h4 class="text-xs font-bold text-on-surface uppercase tracking-wider mb-2 border-t border-outline-variant pt-3">Feature Drivers &amp; Value Added</h4>
+                                <div id="whatIfContributionsList" class="space-y-2 text-xs">
+                                    <!-- Injected by app.js -->
+                                </div>
+
+                                <button onclick="app.applyWhatIfAsMainValuation()" class="w-full btn-primary h-10 rounded-lg text-xs font-bold mt-5 shadow-sm">
+                                    Adopt These Parameters as Active Valuation
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
+
+                <!-- ================= VIEW 4: FEATURE 2 - MORTGAGE & INVESTOR ROI CALCULATOR ================= -->
+                <section id="viewMortgageRoi" class="view-section">
+                    
+                    <div class="mb-5">
+                        <h2 class="text-2xl md:text-3xl font-bold text-on-surface tracking-tight">Mortgage &amp; Investor ROI Financial Suite</h2>
+                        <p class="text-xs md:text-sm text-on-surface-variant mt-0.5">Amortization schedules, monthly payment breakdown, rental yield, and 10-year cash-on-cash returns.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        
+                        <!-- Left Loan Parameters (6 cols) -->
+                        <div class="lg:col-span-6 space-y-4">
+                            <div class="data-card rounded-xl p-5 md:p-6 space-y-4">
+                                <h3 class="text-sm font-bold text-on-surface border-b border-outline-variant pb-2">Loan Parameters</h3>
+
+                                <div>
+                                    <div class="flex justify-between items-center text-xs mb-1">
+                                        <span class="font-semibold text-on-surface">Property Price</span>
+                                        <span id="mortgagePriceDisplay" class="font-data-mono font-bold text-primary text-sm">$1,245,000</span>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div class="flex justify-between items-center text-xs mb-1">
+                                        <span class="font-semibold text-on-surface">Down Payment (%)</span>
+                                        <span id="lblDownPayment" class="font-data-mono font-bold text-primary">20% ($249,000)</span>
+                                    </div>
+                                    <input id="sliderDownPayment" type="range" min="3" max="50" step="1" value="20" class="w-full" oninput="app.recalculateMortgage()">
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="text-xs font-semibold text-on-surface">Loan Term</label>
+                                        <select id="mortgageLoanTerm" class="input-field w-full rounded-lg px-3 py-2 text-xs mt-1" onchange="app.recalculateMortgage()">
+                                            <option value="30" selected>30-Year Fixed</option>
+                                            <option value="15">15-Year Fixed</option>
+                                            <option value="20">20-Year Fixed</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="text-xs font-semibold text-on-surface">Interest Rate (%)</label>
+                                        <input id="mortgageInterestRate" type="number" step="0.05" value="6.85" class="input-field w-full rounded-lg px-3 py-2 text-xs font-data-mono mt-1" oninput="app.recalculateMortgage()">
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-3 gap-3 pt-2">
+                                    <div>
+                                        <label class="text-[11px] font-semibold text-on-surface">Property Tax (%)</label>
+                                        <input id="mortgageTaxRate" type="number" step="0.1" value="1.2" class="input-field w-full rounded-lg px-2.5 py-1.5 text-xs font-data-mono mt-1" oninput="app.recalculateMortgage()">
+                                    </div>
+                                    <div>
+                                        <label class="text-[11px] font-semibold text-on-surface">Insurance ($/yr)</label>
+                                        <input id="mortgageInsurance" type="number" step="100" value="1800" class="input-field w-full rounded-lg px-2.5 py-1.5 text-xs font-data-mono mt-1" oninput="app.recalculateMortgage()">
+                                    </div>
+                                    <div>
+                                        <label class="text-[11px] font-semibold text-on-surface">HOA ($/mo)</label>
+                                        <input id="mortgageHoa" type="number" step="50" value="150" class="input-field w-full rounded-lg px-2.5 py-1.5 text-xs font-data-mono mt-1" oninput="app.recalculateMortgage()">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Payment Breakdown & Investor Metrics (6 cols) -->
+                        <div class="lg:col-span-6 space-y-4">
+                            
+                            <!-- Monthly Breakdown Card -->
+                            <div class="bg-white rounded-xl border border-outline-variant p-5 shadow-sm">
+                                <div class="flex justify-between items-start mb-3">
+                                    <div>
+                                        <div class="text-xs uppercase font-bold text-on-surface-variant">Estimated Monthly Payment</div>
+                                        <div id="mortgageTotalMonthly" class="text-3xl font-bold text-primary font-data-mono mt-1">$7,890 / mo</div>
+                                    </div>
+                                    <span class="text-xs bg-surface-container font-mono px-2.5 py-1 rounded text-on-surface">PITI + HOA</span>
+                                </div>
+
+                                <div class="h-44 w-full relative mb-3">
+                                    <canvas id="mortgageDonutChart"></canvas>
+                                </div>
+
+                                <div id="mortgageLegend" class="grid grid-cols-2 gap-2 text-[11px] border-t border-outline-variant pt-2.5"></div>
+                            </div>
+
+                            <!-- Investor Mode Card -->
+                            <div class="bg-surface rounded-xl border border-secondary/30 p-5 shadow-sm">
+                                <div class="flex items-center gap-1.5 mb-3">
+                                    <span class="material-symbols-outlined text-secondary text-[18px]">trending_up</span>
+                                    <h4 class="text-xs font-bold text-secondary uppercase tracking-wider">Investor Cap Rate &amp; Yield Projections</h4>
+                                </div>
+
+                                <div class="grid grid-cols-3 gap-3 text-center">
+                                    <div class="p-2.5 bg-white rounded-lg border border-outline-variant">
+                                        <div class="text-[10px] text-on-surface-variant uppercase font-bold">Gross Yield</div>
+                                        <div id="invGrossYield" class="text-base font-bold text-primary font-data-mono mt-0.5">7.2%</div>
+                                    </div>
+                                    <div class="p-2.5 bg-white rounded-lg border border-outline-variant">
+                                        <div class="text-[10px] text-on-surface-variant uppercase font-bold">Net Cap Rate</div>
+                                        <div id="invCapRate" class="text-base font-bold text-secondary font-data-mono mt-0.5">5.4%</div>
+                                    </div>
+                                    <div class="p-2.5 bg-white rounded-lg border border-outline-variant">
+                                        <div class="text-[10px] text-on-surface-variant uppercase font-bold">10-Yr ROI</div>
+                                        <div id="inv10YrRoi" class="text-base font-bold text-amber-600 font-data-mono mt-0.5">+142%</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </section>
+
+
+                <!-- ================= VIEW 5: FEATURE 4 - SIDE-BY-SIDE PROPERTY COMPARISON ================= -->
+                <section id="viewPropertyComparison" class="view-section">
+                    
+                    <div class="mb-5 flex flex-col md:flex-row md:items-center justify-between gap-3">
+                        <div>
+                            <h2 class="text-2xl md:text-3xl font-bold text-on-surface tracking-tight">Side-by-Side Property Comparison Matrix</h2>
+                            <p class="text-xs md:text-sm text-on-surface-variant mt-0.5">Compare key financial indicators, price per square foot, and appreciation across multiple properties.</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="app.clearComparison()" class="btn-secondary px-3 py-1.5 rounded-lg text-xs font-bold">Clear Matrix</button>
+                            <button onclick="app.openSavedEstimatesModal()" class="btn-primary px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1">
+                                <span class="material-symbols-outlined text-[16px]">add</span> Add from Bookmarks
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="comparisonMatrixContainer" class="bg-white rounded-xl border border-outline-variant shadow-sm overflow-x-auto p-4 min-h-[400px]">
+                        <!-- Injected by app.js -->
+                    </div>
+                </section>
+
+
+                <!-- ================= VIEW 6: FEATURE 6 - BULK / BATCH CSV VALUATION ================= -->
+                <section id="viewBatchValuation" class="view-section">
+                    
+                    <div class="mb-5 flex flex-col md:flex-row md:items-center justify-between gap-3">
+                        <div>
+                            <h2 class="text-2xl md:text-3xl font-bold text-on-surface tracking-tight">Bulk / Batch CSV Valuation Engine</h2>
+                            <p class="text-xs md:text-sm text-on-surface-variant mt-0.5">Upload a CSV portfolio of 100+ properties to run vectorized pipeline inference in seconds.</p>
+                        </div>
+                        <button onclick="app.downloadBatchTemplateCsv()" class="btn-secondary px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-[16px]">download</span> Download CSV Template
+                        </button>
+                    </div>
+
+                    <!-- Upload Zone Card -->
+                    <div class="bg-white rounded-xl border-2 border-dashed border-primary/40 p-8 text-center mb-6 hover:border-primary transition-colors cursor-pointer bg-surface-container-low" onclick="document.getElementById('batchCsvFileInput').click()">
+                        <input id="batchCsvFileInput" type="file" accept=".csv" class="hidden" onchange="app.handleBatchCsvUpload(this.files[0])">
+                        <div class="w-12 h-12 bg-primary-container text-white rounded-full flex items-center justify-center mx-auto mb-3">
+                            <span class="material-symbols-outlined text-[24px]">cloud_upload</span>
+                        </div>
+                        <h3 class="text-sm font-bold text-on-surface mb-1">Click to Upload or Drag &amp; Drop Property CSV</h3>
+                        <p class="text-xs text-on-surface-variant max-w-md mx-auto">Supports CSVs containing zip_code, square_footage, bedrooms, bathrooms, year_built, etc.</p>
+                    </div>
+
+                    <!-- Batch Results Container -->
+                    <div id="batchResultsContainer" class="bg-white rounded-xl border border-outline-variant p-5 shadow-sm hidden">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-outline-variant pb-3 mb-4">
+                            <div>
+                                <h3 class="text-sm font-bold text-on-surface">Batch Processing Summary</h3>
+                                <p id="batchSummaryStats" class="text-xs text-on-surface-variant mt-0.5">Total Properties: 0 • Average Value: $0</p>
+                            </div>
+                            <button onclick="app.exportEnrichedBatchCsv()" class="btn-primary px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-sm">
+                                <span class="material-symbols-outlined text-[16px]">file_download</span> Download Enriched CSV
+                            </button>
+                        </div>
+
+                        <div class="overflow-x-auto max-h-96">
+                            <table class="w-full text-left text-xs border-collapse font-data-mono">
+                                <thead>
+                                    <tr class="bg-surface-container border-b border-outline-variant text-on-surface">
+                                        <th class="p-2.5 font-bold">#</th>
+                                        <th class="p-2.5 font-bold">ZIP</th>
+                                        <th class="p-2.5 font-bold">Sq Ft</th>
+                                        <th class="p-2.5 font-bold">Beds/Baths</th>
+                                        <th class="p-2.5 font-bold">Year</th>
+                                        <th class="p-2.5 font-bold text-primary">Predicted Valuation</th>
+                                        <th class="p-2.5 font-bold">Rate ($/sqft)</th>
+                                        <th class="p-2.5 font-bold">Range</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="batchTableBody" class="divide-y divide-outline-variant/30"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- ================= VIEW 7: MARKET INSIGHTS ================= -->
+                <section id="viewMarketInsights" class="view-section">
+                    
+                    <div class="mb-5 flex justify-between items-center">
+                        <div>
+                            <h2 class="text-2xl md:text-3xl font-bold text-on-surface tracking-tight">Market Insights</h2>
+                            <p class="text-xs md:text-sm text-on-surface-variant mt-0.5">Macro real estate dynamics and regional valuation comparisons.</p>
+                        </div>
+                        <button onclick="window.print()" class="btn-secondary px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[16px]">print</span> Print Report
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
+                        <div class="data-card rounded-xl p-4">
+                            <div class="flex justify-between items-start mb-1.5">
+                                <span class="text-xs font-bold text-on-surface-variant">National Median Price</span>
+                                <span class="material-symbols-outlined text-outline text-[18px]">payments</span>
+                            </div>
+                            <div class="flex items-baseline gap-2">
+                                <span class="text-2xl font-bold text-on-surface font-data-mono">$428,500</span>
+                                <span class="text-[10px] font-bold bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full flex items-center gap-0.5">
+                                    <span class="material-symbols-outlined text-[10px]">trending_up</span> +4.2% YoY
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="data-card rounded-xl p-4">
+                            <div class="flex justify-between items-start mb-1.5">
+                                <span class="text-xs font-bold text-on-surface-variant">Active Inventory</span>
+                                <span class="material-symbols-outlined text-outline text-[18px]">home_work</span>
+                            </div>
+                            <div class="flex items-baseline gap-2">
+                                <span class="text-2xl font-bold text-on-surface font-data-mono">1.2M</span>
+                                <span class="text-[10px] font-bold bg-error-container text-on-error-container px-2 py-0.5 rounded-full flex items-center gap-0.5">
+                                    <span class="material-symbols-outlined text-[10px]">trending_down</span> -1.5% MoM
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="data-card rounded-xl p-4">
+                            <div class="flex justify-between items-start mb-1.5">
+                                <span class="text-xs font-bold text-on-surface-variant">Avg. 30Y Fixed Rate</span>
+                                <span class="material-symbols-outlined text-outline text-[18px]">percent</span>
+                            </div>
+                            <div class="flex items-baseline gap-2">
+                                <span class="text-2xl font-bold text-on-surface font-data-mono">6.85%</span>
+                                <span class="text-xs text-on-surface-variant font-medium">Steady</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        <div class="lg:col-span-8 bg-white rounded-xl border border-outline-variant shadow-sm flex flex-col p-4">
+                            <h3 class="text-xs font-bold text-on-surface uppercase mb-3">Median Price per Sq Ft by Metro Area</h3>
+                            <div class="h-72 w-full relative">
+                                <canvas id="marketBarChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="lg:col-span-4 bg-white rounded-xl border border-outline-variant p-4 shadow-sm">
+                            <h3 class="text-xs font-bold text-on-surface uppercase border-b border-outline-variant pb-2 mb-3">Regional Performance</h3>
+                            <div id="regionalBreakdownList" class="flex flex-col divide-y divide-outline-variant/40 text-xs"></div>
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- ================= VIEW 8: OVERVIEW & BLUEPRINT ================= -->
+                <section id="viewLandingOverview" class="view-section">
+                    
+                    <div class="relative rounded-2xl overflow-hidden border border-outline-variant bg-white shadow-sm mb-6 p-8 md:p-10">
+                        <span class="px-3 py-1 bg-secondary-container text-on-secondary-container rounded-full text-xs font-bold uppercase tracking-wider mb-3 inline-block">Machine Learning Engine v3.5</span>
+                        <h1 class="text-3xl md:text-4xl font-bold text-on-surface tracking-tight mb-3">Precision Real Estate Valuation Platform</h1>
+                        <p class="text-xs md:text-sm text-on-surface-variant max-w-2xl leading-relaxed mb-6">
+                            PropValue AI combines Scikit-Learn ensemble regressors with interactive financial calculators, geospatial mapping, and automated appraisal dossier exports.
+                        </p>
+                        <div class="flex gap-3">
+                            <button onclick="app.showView('valuationForm')" class="btn-primary px-5 h-10 rounded-lg text-xs font-bold shadow-md">
+                                Launch Valuation Tool
+                            </button>
+                            <button onclick="app.showView('batchValuation')" class="btn-secondary px-5 h-10 rounded-lg text-xs font-bold">
+                                Bulk CSV Mode
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                        <div class="data-card rounded-xl p-4 text-center">
+                            <span class="text-2xl font-bold text-primary font-data-mono">98.0%</span>
+                            <p class="text-xs text-on-surface-variant mt-0.5">R² Accuracy</p>
+                        </div>
+                        <div class="data-card rounded-xl p-4 text-center">
+                            <span class="text-2xl font-bold text-primary font-data-mono">6,000+</span>
+                            <p class="text-xs text-on-surface-variant mt-0.5">Records</p>
+                        </div>
+                        <div class="data-card rounded-xl p-4 text-center">
+                            <span class="text-2xl font-bold text-primary font-data-mono">&lt; 15ms</span>
+                            <p class="text-xs text-on-surface-variant mt-0.5">Latency</p>
+                        </div>
+                        <div class="data-card rounded-xl p-4 text-center">
+                            <span class="text-2xl font-bold text-primary font-data-mono">7 Suites</span>
+                            <p class="text-xs text-on-surface-variant mt-0.5">Active Features</p>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- ================= MODAL: FEATURE 5 - OFFICIAL APPRAISAL DOSSIER (PDF / PRINT) ================= -->
+    <div id="appraisalDossierModal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-outline-variant overflow-hidden">
+            <div class="p-4 border-b border-outline-variant flex justify-between items-center bg-surface-bright no-print">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">verified</span>
+                    <h3 class="text-sm font-bold text-on-surface">Client-Ready Property Appraisal Certificate</h3>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="window.print()" class="btn-primary px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[16px]">print</span> Print / Save PDF
+                    </button>
+                    <button onclick="app.closeAppraisalDossierModal()" class="p-1 text-on-surface-variant hover:bg-surface-container rounded-lg">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div id="dossierPrintArea" class="flex-1 overflow-y-auto p-8 space-y-6 text-xs leading-relaxed bg-white">
+                <!-- Injected by app.js -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MODAL: SAVED ESTIMATES ================= -->
+    <div id="savedEstimatesModal" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[85vh] flex flex-col shadow-2xl border border-outline-variant overflow-hidden">
+            <div class="p-5 border-b border-outline-variant flex justify-between items-center bg-surface-bright">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">bookmarks</span>
+                    <h3 class="text-base font-bold text-on-surface">Saved Property Valuations</h3>
+                </div>
+                <button onclick="app.closeSavedEstimatesModal()" class="p-1 text-on-surface-variant hover:bg-surface-container rounded-lg">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            
+            <div id="savedEstimatesList" class="flex-1 overflow-y-auto p-5 space-y-2.5"></div>
+
+            <div class="p-3.5 border-t border-outline-variant flex justify-between items-center bg-surface-container-low text-xs">
+                <button onclick="app.clearSavedEstimates()" class="text-error hover:underline font-semibold">Clear History</button>
+                <button onclick="app.exportSavedEstimatesCsv()" class="btn-primary px-3.5 py-1.5 rounded-lg font-bold">Export to CSV</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MODAL: MODEL SPECS ================= -->
+    <div id="modelSpecsModal" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-xl w-full max-h-[85vh] flex flex-col shadow-2xl border border-outline-variant overflow-hidden">
+            <div class="p-5 border-b border-outline-variant flex justify-between items-center bg-surface-bright">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">memory</span>
+                    <h3 class="text-base font-bold text-on-surface">ML Model Pipeline Architecture</h3>
+                </div>
+                <button onclick="app.closeModelInfoModal()" class="p-1 text-on-surface-variant hover:bg-surface-container rounded-lg">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto p-5 text-xs space-y-3 font-mono leading-relaxed" id="modelSpecsContent"></div>
+        </div>
+    </div>
+
+    <!-- ================= MODAL: AUTHENTICATION (SIGN IN / REGISTER) ================= -->
+    <div id="authModal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full flex flex-col shadow-2xl border border-outline-variant overflow-hidden">
+            <div class="p-4 border-b border-outline-variant flex justify-between items-center bg-surface-bright">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">account_circle</span>
+                    <h3 class="text-base font-bold text-on-surface" id="authModalTitle">Sign In to PropValue AI</h3>
+                </div>
+                <button onclick="app.closeAuthModal()" class="p-1 text-on-surface-variant hover:bg-surface-container rounded-lg">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            <!-- Tab Switcher -->
+            <div class="grid grid-cols-2 p-1.5 bg-surface-container border-b border-outline-variant text-xs font-bold">
+                <button type="button" id="tabAuthLogin" onclick="app.switchAuthTab('login')" class="py-2 rounded-lg bg-white text-primary shadow-sm transition-all">
+                    Sign In
+                </button>
+                <button type="button" id="tabAuthRegister" onclick="app.switchAuthTab('register')" class="py-2 rounded-lg text-on-surface-variant hover:text-on-surface transition-all">
+                    Create Account
+                </button>
+            </div>
+            
+            <div class="p-6 space-y-4 text-xs">
+                
+                <!-- Error / Status Notice -->
+                <div id="authErrorMessage" class="p-2.5 rounded-lg bg-rose-50 text-rose-800 border border-rose-200 hidden font-medium"></div>
+
+                <!-- SIGN IN FORM -->
+                <form id="loginForm" onsubmit="app.handleLoginSubmit(event)" class="space-y-3.5">
+                    <div>
+                        <label class="font-semibold text-on-surface block mb-1">Email Address</label>
+                        <input id="loginEmail" type="email" required class="input-field w-full rounded-lg px-3 py-2 text-xs" placeholder="name@company.com" value="prabhat@propvalue.ai">
+                    </div>
+                    <div>
+                        <label class="font-semibold text-on-surface block mb-1">Password</label>
+                        <input id="loginPassword" type="password" required class="input-field w-full rounded-lg px-3 py-2 text-xs" placeholder="••••••••" value="password123">
+                    </div>
+                    
+                    <button type="submit" id="btnLoginSubmit" class="w-full btn-primary h-10 rounded-lg font-bold shadow-md flex items-center justify-center gap-1.5">
+                        <span class="material-symbols-outlined text-[16px]">login</span> Sign In
+                    </button>
+
+                    <div class="pt-2 border-t border-outline-variant flex items-center justify-between">
+                        <span class="text-on-surface-variant">Testing the application?</span>
+                        <button type="button" onclick="app.demoLogin()" class="text-secondary font-bold hover:underline flex items-center gap-0.5">
+                            <span class="material-symbols-outlined text-[14px]">bolt</span> 1-Click Demo Login
+                        </button>
+                    </div>
+                </form>
+
+                <!-- REGISTER FORM -->
+                <form id="registerForm" onsubmit="app.handleRegisterSubmit(event)" class="space-y-3 hidden">
+                    <div>
+                        <label class="font-semibold text-on-surface block mb-1">Full Name *</label>
+                        <input id="regFullName" type="text" required class="input-field w-full rounded-lg px-3 py-2 text-xs" placeholder="e.g. Sarah Jenkins">
+                    </div>
+                    <div>
+                        <label class="font-semibold text-on-surface block mb-1">Email Address *</label>
+                        <input id="regEmail" type="email" required class="input-field w-full rounded-lg px-3 py-2 text-xs" placeholder="name@company.com">
+                    </div>
+                    <div>
+                        <label class="font-semibold text-on-surface block mb-1">Password * (Min 6 chars)</label>
+                        <input id="regPassword" type="password" minlength="6" required class="input-field w-full rounded-lg px-3 py-2 text-xs" placeholder="••••••••">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="font-semibold text-on-surface block mb-1">Professional Role</label>
+                            <select id="regRole" class="input-field w-full rounded-lg px-2.5 py-2 text-xs bg-white">
+                                <option value="Licensed Appraiser" selected>Licensed Appraiser</option>
+                                <option value="Real Estate Investor">Real Estate Investor</option>
+                                <option value="Broker / Realtor">Broker / Realtor</option>
+                                <option value="Property Analyst">Property Analyst</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="font-semibold text-on-surface block mb-1">License # (Optional)</label>
+                            <input id="regLicense" type="text" class="input-field w-full rounded-lg px-2.5 py-2 text-xs font-mono" placeholder="CA-BRE#...">
+                        </div>
+                    </div>
+
+                    <button type="submit" id="btnRegisterSubmit" class="w-full btn-primary h-10 rounded-lg font-bold shadow-md flex items-center justify-center gap-1.5 mt-2">
+                        <span class="material-symbols-outlined text-[16px]">how_to_reg</span> Create Account &amp; Sign In
+                    </button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

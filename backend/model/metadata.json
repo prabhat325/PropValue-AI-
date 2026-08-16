@@ -1,0 +1,54 @@
+{
+  "model_name": "PropValue_RandomForest_Valuator",
+  "version": "3.4.0",
+  "created_at": "2026-08-15T19:40:09Z",
+  "metrics": {
+    "r2_score": 0.9799,
+    "mae": 67836.7,
+    "rmse": 104064.56,
+    "mape_percent": 6.08
+  },
+  "features": {
+    "numerical": [
+      "square_footage",
+      "bedrooms",
+      "bathrooms",
+      "year_built",
+      "lot_size_acres",
+      "garage_spaces"
+    ],
+    "categorical": [
+      "zip_code",
+      "renovation_status",
+      "property_type"
+    ]
+  },
+  "allowed_categories": {
+    "zip_code": [
+      "10001",
+      "2108",
+      "30301",
+      "33101",
+      "60601",
+      "75001",
+      "78701",
+      "80202",
+      "85001",
+      "90210",
+      "94102",
+      "98101"
+    ],
+    "renovation_status": [
+      "Full Gut Rehab",
+      "Major (Structural/Systems)",
+      "Minor (Cosmetic)"
+    ],
+    "property_type": [
+      "Condo",
+      "Multi-Family",
+      "Single Family",
+      "Townhouse"
+    ]
+  },
+  "training_samples": 6000
+}
