@@ -1,6 +1,6 @@
 """
-Rigorous Machine Learning Audit & 5-Fold Cross Validation Script for PropValue AI.
-Demonstrates dataset composition, zero data leakage proof, and 5-fold CV metrics.
+Machine Learning Model Evaluation & 5-Fold Cross-Validation Script for PropValue AI.
+Evaluates dataset composition, pipeline preprocessing, and 5-fold CV metrics.
 """
 
 import os
@@ -68,7 +68,7 @@ def build_pipeline():
 
 def run_ml_audit():
     print("=" * 75)
-    print("PROPVALUE AI: RIGOROUS MACHINE LEARNING AUDIT & CROSS-VALIDATION")
+    print("PROPVALUE AI: MACHINE LEARNING EVALUATION & CROSS-VALIDATION")
     print("=" * 75)
 
     df = pd.read_csv(DATA_PATH)
@@ -159,7 +159,7 @@ def run_ml_audit():
         print(f"   {rank}. {all_feature_names[idx]:<30} : {importances[idx] * 100:.2f}% importance")
 
     print("\n" + "=" * 75)
-    print("VERIFICATION CONCLUSION: 100% MATHEMATICAL & ML RIGOR CONFIRMED")
+    print("VERIFICATION COMPLETE: ALL MODEL EVALUATIONS PASSED")
     print("=" * 75)
 
 if __name__ == "__main__":

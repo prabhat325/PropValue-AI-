@@ -1,7 +1,7 @@
 """
-End-to-End Verification Test Suite for PropValue AI.
-Tests ML predictions, What-If simulator, Mortgage ROI, AI listing parser, Batch CSV,
-and Full-Stack JWT Authentication & Cloud Persistence.
+End-to-End Test Suite for PropValue AI.
+Tests ML predictions, What-If simulator, Mortgage ROI, listing parser, Batch CSV,
+and JWT Authentication with SQLite persistence.
 """
 
 import urllib.request
@@ -168,11 +168,11 @@ def test_full_jwt_auth_flow():
         assert del_res["status"] == "success"
 
 if __name__ == "__main__":
-    print(f"Executing Full Intelligence Suite & JWT Auth E2E Tests on {BASE_URL}...\n")
+    print(f"Running PropValue AI End-to-End Tests on {BASE_URL}...\n")
     test_health()
     test_what_if()
     test_mortgage_calc()
     test_parse_listing()
     test_batch_prediction()
     test_full_jwt_auth_flow()
-    print("\nALL FEATURES & FULL-STACK JWT AUTHENTICATION VERIFIED AND PASSING SUCCESSFULLY!")
+    print("\nALL TESTS PASSED SUCCESSFULLY!")

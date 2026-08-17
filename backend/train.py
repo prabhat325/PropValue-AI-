@@ -156,7 +156,7 @@ def train_and_evaluate():
 
     metadata = {
         "model_name": "PropValue_RandomForest_Valuator",
-        "version": "3.4.0",
+        "version": "1.0.0",
         "created_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "metrics": {
             "r2_score": round(test_r2, 4),

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PropValue AI - Precision Real Estate Valuation Platform</title>
+    <title>PropValue AI - Real Estate Valuation Platform</title>
     
     <!-- Tailwind CSS with Forms and Container Queries -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
@@ -139,7 +139,7 @@
 
         <div class="mt-auto pt-3 border-t border-outline-variant space-y-2">
             <button onclick="app.openAppraisalDossierModal()" class="w-full btn-primary h-9 text-xs font-bold rounded-lg flex justify-center items-center gap-2 shadow-sm">
-                <span class="material-symbols-outlined text-[16px]">verified</span> Appraisal Dossier
+                <span class="material-symbols-outlined text-[16px]">description</span> Valuation Report
             </button>
             <div class="flex flex-col gap-1 text-xs">
                 <a href="javascript:void(0)" onclick="app.showModelInfoModal()" class="flex items-center gap-2 px-2 py-1 text-on-surface-variant hover:bg-surface-container-high rounded transition-all">
@@ -423,7 +423,7 @@
                                 <span class="material-symbols-outlined text-[16px]">bookmark_add</span> Save
                             </button>
                             <button onclick="app.openAppraisalDossierModal()" class="btn-primary px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 shadow-sm">
-                                <span class="material-symbols-outlined text-[16px]">verified</span> Dossier PDF
+                                <span class="material-symbols-outlined text-[16px]">description</span> Report PDF
                             </button>
                         </div>
                     </div>
@@ -895,7 +895,7 @@
                             </div>
                         </div>
                         <div class="lg:col-span-4 bg-white rounded-xl border border-outline-variant p-4 shadow-sm">
-                            <h3 class="text-xs font-bold text-on-surface uppercase border-b border-outline-variant pb-2 mb-3">Regional Performance</h3>
+                            <h3 class="text-xs font-bold text-on-surface uppercase border-b border-outline-variant pb-2 mb-3">Regional Breakdown</h3>
                             <div id="regionalBreakdownList" class="flex flex-col divide-y divide-outline-variant/40 text-xs"></div>
                         </div>
                     </div>
@@ -906,10 +906,10 @@
                 <section id="viewLandingOverview" class="view-section">
                     
                     <div class="relative rounded-2xl overflow-hidden border border-outline-variant bg-white shadow-sm mb-6 p-8 md:p-10">
-                        <span class="px-3 py-1 bg-secondary-container text-on-secondary-container rounded-full text-xs font-bold uppercase tracking-wider mb-3 inline-block">Machine Learning Engine v3.5</span>
-                        <h1 class="text-3xl md:text-4xl font-bold text-on-surface tracking-tight mb-3">Precision Real Estate Valuation Platform</h1>
+                        <span class="px-3 py-1 bg-secondary-container text-on-secondary-container rounded-full text-xs font-bold uppercase tracking-wider mb-3 inline-block">Machine Learning Pipeline v1.0</span>
+                        <h1 class="text-3xl md:text-4xl font-bold text-on-surface tracking-tight mb-3">Real Estate Valuation Platform</h1>
                         <p class="text-xs md:text-sm text-on-surface-variant max-w-2xl leading-relaxed mb-6">
-                            PropValue AI combines Scikit-Learn ensemble regressors with interactive financial calculators, geospatial mapping, and automated appraisal dossier exports.
+                            PropValue AI combines Scikit-Learn regression models with interactive financial calculators, geospatial mapping, and printable property valuation reports.
                         </p>
                         <div class="flex gap-3">
                             <button onclick="app.showView('valuationForm')" class="btn-primary px-5 h-10 rounded-lg text-xs font-bold shadow-md">
@@ -935,7 +935,7 @@
                             <p class="text-xs text-on-surface-variant mt-0.5">Latency</p>
                         </div>
                         <div class="data-card rounded-xl p-4 text-center">
-                            <span class="text-2xl font-bold text-primary font-data-mono">7 Suites</span>
+                            <span class="text-2xl font-bold text-primary font-data-mono">7 Tools</span>
                             <p class="text-xs text-on-surface-variant mt-0.5">Active Features</p>
                         </div>
                     </div>
@@ -945,13 +945,13 @@
         </div>
     </main>
 
-    <!-- ================= MODAL: FEATURE 5 - OFFICIAL APPRAISAL DOSSIER (PDF / PRINT) ================= -->
+    <!-- ================= MODAL: FEATURE 5 - PROPERTY VALUATION REPORT (PDF / PRINT) ================= -->
     <div id="appraisalDossierModal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-outline-variant overflow-hidden">
             <div class="p-4 border-b border-outline-variant flex justify-between items-center bg-surface-bright no-print">
                 <div class="flex items-center gap-2">
-                    <span class="material-symbols-outlined text-primary">verified</span>
-                    <h3 class="text-sm font-bold text-on-surface">Client-Ready Property Appraisal Certificate</h3>
+                    <span class="material-symbols-outlined text-primary">description</span>
+                    <h3 class="text-sm font-bold text-on-surface">Property Valuation Summary Report</h3>
                 </div>
                 <div class="flex items-center gap-2">
                     <button onclick="window.print()" class="btn-primary px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1">

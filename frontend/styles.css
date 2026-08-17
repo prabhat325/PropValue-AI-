@@ -1,4 +1,4 @@
-/* PropValue AI - Precision Estate Narrative Design System */
+/* PropValue AI - Real Estate Valuation UI Styles */
 
 :root {
   --color-surface: #faf8ff;
@@ -205,7 +205,7 @@ input[type=range] {
   background: #757684;
 }
 
-/* Printable PDF Appraisal Dossier Styles */
+/* Printable Valuation Report Styles */
 @media print {
   body {
     background: white !important;

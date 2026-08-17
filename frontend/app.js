@@ -1,6 +1,6 @@
 /**
- * PropValue AI - Full Real Estate Intelligence Suite Controller
- * Full-Stack JWT Authentication + Cloud Persistence + 7 Advanced Features
+ * PropValue AI - Frontend Application Controller
+ * Real Estate Price Prediction & Financial Analytics
  */
 
 const API_BASE = window.location.origin;
@@ -1074,21 +1074,21 @@ class PropValueApp {
         const area = document.getElementById('dossierPrintArea');
         const d = this.lastPredictionResult;
 
-        const appraiserName = this.currentUser ? this.currentUser.full_name : "Prabhat Dubey";
-        const appraiserRole = this.currentUser ? this.currentUser.role : "Lead Valuation Analyst & Appraiser";
-        const appraiserLic = this.currentUser && this.currentUser.license_number ? this.currentUser.license_number : "CA-BRE# 02948102";
+        const userName = this.currentUser ? this.currentUser.full_name : "Prabhat Dubey";
+        const userRole = this.currentUser ? this.currentUser.role : "Valuation Analyst";
+        const userOrg = this.currentUser && this.currentUser.license_number ? this.currentUser.license_number : "PropValue Analytics";
 
         area.innerHTML = `
             <div class="flex justify-between items-start border-b-2 border-primary pb-4">
                 <div>
                     <div class="flex items-center gap-2">
                         <span class="material-symbols-outlined text-primary text-[28px]">real_estate_agent</span>
-                        <h2 class="text-xl font-bold text-primary tracking-tight">PropValue AI™ Certified Valuation Dossier</h2>
+                        <h2 class="text-xl font-bold text-primary tracking-tight">PropValue AI Property Valuation Report</h2>
                     </div>
-                    <div class="text-[11px] text-on-surface-variant mt-1">Official Machine Learning Property Assessment • Document ID: PV-${Date.now()}</div>
+                    <div class="text-[11px] text-on-surface-variant mt-1">Automated Valuation Model Summary • Reference ID: PV-${Date.now()}</div>
                 </div>
                 <div class="text-right">
-                    <div class="text-xs font-bold text-secondary uppercase tracking-wider">Bank-Grade Appraisal</div>
+                    <div class="text-xs font-bold text-secondary uppercase tracking-wider">Property Valuation</div>
                     <div class="text-[11px] text-on-surface-variant">Generated on ${new Date().toLocaleDateString()}</div>
                 </div>
             </div>
@@ -1096,20 +1096,20 @@ class PropValueApp {
             <!-- Subject Valuation Box -->
             <div class="p-5 bg-surface-container-low rounded-xl border border-outline-variant flex justify-between items-center">
                 <div>
-                    <div class="text-xs uppercase font-bold text-on-surface-variant">Certified Market Valuation</div>
+                    <div class="text-xs uppercase font-bold text-on-surface-variant">Estimated Market Value</div>
                     <div class="text-4xl font-bold text-primary font-data-mono mt-1">${d.predicted_price_formatted}</div>
                     <div class="text-xs text-on-surface-variant mt-1 font-data-mono">${d.price_range_formatted} • $${d.price_per_sqft}/sqft</div>
                 </div>
                 <div class="text-right">
-                    <div class="text-xs uppercase font-bold text-on-surface-variant">Statistical Confidence</div>
+                    <div class="text-xs uppercase font-bold text-on-surface-variant">Model Confidence</div>
                     <div class="text-2xl font-bold text-secondary font-data-mono mt-1">${d.confidence_score}%</div>
-                    <div class="text-[10px] text-on-surface-variant">R² 0.980 Model Engine v${d.model_version}</div>
+                    <div class="text-[10px] text-on-surface-variant">Random Forest (R² 0.980)</div>
                 </div>
             </div>
 
             <!-- Subject Characteristics -->
             <div>
-                <h4 class="text-xs font-bold uppercase tracking-wider text-on-surface border-b border-outline-variant pb-1.5 mb-3">Property Specification Matrix</h4>
+                <h4 class="text-xs font-bold uppercase tracking-wider text-on-surface border-b border-outline-variant pb-1.5 mb-3">Property Specifications</h4>
                 <div class="grid grid-cols-3 gap-3 text-xs font-data-mono">
                     <div class="p-2.5 bg-surface rounded border border-outline-variant">Location: <b>${d.location_summary}</b></div>
                     <div class="p-2.5 bg-surface rounded border border-outline-variant">Living Area: <b>${d.input_summary['Square Footage']}</b></div>
@@ -1122,7 +1122,7 @@ class PropValueApp {
 
             <!-- Comparable Market Analysis Table -->
             <div>
-                <h4 class="text-xs font-bold uppercase tracking-wider text-on-surface border-b border-outline-variant pb-1.5 mb-3">Comparable Market Registry (2-Mile Radius)</h4>
+                <h4 class="text-xs font-bold uppercase tracking-wider text-on-surface border-b border-outline-variant pb-1.5 mb-3">Nearby Comparable Properties</h4>
                 <table class="w-full text-xs text-left border-collapse font-data-mono">
                     <thead>
                         <tr class="bg-surface-container border-b border-outline-variant">
@@ -1150,13 +1150,13 @@ class PropValueApp {
             <!-- Analyst Sign-Off Block -->
             <div class="pt-6 border-t border-outline-variant flex justify-between items-end text-[11px] text-on-surface-variant">
                 <div>
-                    <div>Assessed by: <b>${appraiserName}</b></div>
-                    <div>Designation: <b>${appraiserRole}</b> (${appraiserLic})</div>
-                    <div>PropValue Analytics • Authorized Automated Valuation Model (AVM)</div>
+                    <div>Prepared by: <b>${userName}</b></div>
+                    <div>Role: <b>${userRole}</b> (${userOrg})</div>
+                    <div>PropValue AI • Automated Valuation Model</div>
                 </div>
                 <div class="text-right">
-                    <div class="font-serif italic text-lg text-primary">${appraiserName}</div>
-                    <div class="border-t border-outline-variant w-44 mt-1">Authorized Appraiser Signature</div>
+                    <div class="font-serif italic text-lg text-primary">${userName}</div>
+                    <div class="border-t border-outline-variant w-44 mt-1">Analyst Signature</div>
                 </div>
             </div>
         `;

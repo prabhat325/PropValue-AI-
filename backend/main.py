@@ -1,10 +1,10 @@
 """
 FastAPI Backend Application for PropValue AI House Price Prediction.
-Serves full real estate intelligence suite:
-- /predict (single valuation)
-- /predict-whatif (sensitivity simulator & feature importance)
-- /predict-batch (bulk CSV / JSON valuation)
-- /parse-listing (AI listing natural language parser)
+Endpoints:
+- /predict (single property valuation)
+- /predict-whatif (feature sensitivity analysis)
+- /predict-batch (bulk CSV valuation)
+- /parse-listing (property listing text parser)
 - /mortgage-calc (mortgage, ROI, rental yield & cap rate)
 - /market-insights & /model-info
 """
@@ -81,9 +81,9 @@ async def lifespan(app: FastAPI):
     yield
 
 app = FastAPI(
-    title="PropValue AI - Real Estate Intelligence Platform",
-    description="Full-scale property valuation & financial intelligence engine powered by Scikit-Learn",
-    version="3.5.0",
+    title="PropValue AI - Real Estate Valuation Platform",
+    description="Property valuation and investment analytics API built with FastAPI and Scikit-Learn",
+    version="1.0.0",
     lifespan=lifespan
 )
 

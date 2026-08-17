@@ -1,5 +1,5 @@
 ---
-name: Precision Estate Narrative
+name: Real Estate Analytics Design System
 colors:
   surface: '#faf8ff'
   surface-dim: '#d2d9f4'
@@ -119,20 +119,20 @@ spacing:
 
 ## Brand & Style
 
-The design system is engineered for a high-trust environment where real estate expertise meets rigorous data analytics. The brand personality is **authoritative, analytical, and transparent**. It aims to evoke a sense of "informed confidence" in users who are making high-stakes financial decisions.
+The design system is built for a clear and data-focused user experience. The interface emphasizes usability, fast comprehension, and clean visual hierarchy for evaluating real estate figures and financial metrics.
 
-The visual style is **Corporate Modern**, characterized by a systematic approach to hierarchy and a commitment to clarity. It leverages a "Data-First" philosophy, where aesthetic flourishes are minimized to allow information to breathe. The UI utilizes a structured grid, purposeful whitespace, and a refined color application to ensure that complex datasets remain accessible and actionable.
+The visual style is **Clean Modern**, utilizing structured cards, consistent spacing, and purposeful contrast. It keeps visual clutter to a minimum so users can focus on inputs, calculations, maps, and comparison charts.
 
 ## Colors
 
-This color palette is anchored in stability and growth. 
+The color palette provides strong contrast and clear state indications:
 
-- **Primary (#1E40AF):** A deep, reliable blue used for core branding, primary actions, and navigational anchors. It represents the "Institutional" strength of the platform.
-- **Secondary (#0D9488):** A crisp teal used to signify positive growth, market trends, and success states. It provides a vibrant contrast to the primary blue without sacrificing professionalism.
-- **Tertiary (#F59E0B):** An amber accent used sparingly for warnings, attention-required states, or high-value data highlights.
-- **Neutral:** A range of Slate grays (`#0F172A` to `#F8FAFC`) provides the structural backbone. Deep slate is reserved for primary text to ensure maximum legibility against clean white surfaces.
+- **Primary (#1E40AF):** Deep blue for primary actions, active navigation, and key headings.
+- **Secondary (#0D9488):** Teal for positive growth indicators and secondary highlights.
+- **Tertiary (#F59E0B):** Amber for warnings, notes, or high-value callouts.
+- **Neutral:** Slate grays (`#0F172A` to `#F8FAFC`) for background canvas, borders, and body text.
 
-Backgrounds should primarily remain white or very light gray (`#F1F5F9`) to maintain a "scientific" and clean atmosphere for data visualization.
+Background surfaces remain clean and light (`#F8FAFC` to `#FFFFFF`) to maintain strong contrast for data tables and charts.
 
 ## Typography
 
