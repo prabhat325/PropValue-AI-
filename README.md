@@ -195,7 +195,7 @@ The current project documentation reports the following test results:
 
 * Git
 * GitHub
-* VS Code / Antigravity
+* VS Code
 
 ---
 
