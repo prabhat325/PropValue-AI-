@@ -1,5 +1,4 @@
 """
-End-to-End Test Suite for PropValue AI.
 Tests ML predictions, What-If simulator, Mortgage ROI, listing parser, Batch CSV,
 and JWT Authentication with SQLite persistence.
 """
